@@ -3,7 +3,21 @@
     class="bg-white rounded-lg shadow-card transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 overflow-hidden"
     :class="{ 'border-l-4 border-primary': item.consumed }"
   >
-    <div class="p-5 flex flex-col md:flex-row justify-between gap-4">
+    <div class="p-5 flex flex-col md:flex-row justify-between gap-6">
+      <div class="md:flex-shrink-0" v-if="item.imageUrl">
+        <img 
+          :src="item.imageUrl" 
+          alt="Couverture" 
+          class="w-full md:w-32 h-40 object-cover rounded-md shadow-sm cursor-pointer hover:opacity-90 transition-opacity"
+          @click="showImageModal = true"
+        />
+      </div>
+      <div v-else class="md:flex-shrink-0 bg-gray-100 rounded-md flex items-center justify-center w-full md:w-32 h-40">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      </div>
+      
       <div class="flex-1">
         <div class="flex items-center mb-2">
           <h3 class="text-xl font-semibold text-dark">{{ item.title }}</h3>
@@ -54,15 +68,26 @@
         </button>
       </div>
     </div>
+    <image-modal 
+      v-if="item.imageUrl" 
+      :show="showImageModal" 
+      :image-url="item.imageUrl" 
+      :title="item.title" 
+      @close="showImageModal = false"
+    />
   </div>
 </template>
 
 <script>
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
+import ImageModal from './ImageModal.vue'
 
 export default defineComponent({
   name: 'LibraryItem',
+  components: {
+    ImageModal
+  },
   props: {
     item: {
       type: Object,
@@ -71,6 +96,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore()
+    const showImageModal = ref(false)
     
     const favorites = computed(() => store.state.favorites)
     const isFavorite = computed(() => favorites.value.includes(props.item.id))
@@ -92,6 +118,7 @@ export default defineComponent({
     return {
       favorites,
       isFavorite,
+      showImageModal,
       toggleConsumed,
       toggleFavorite,
       removeItem

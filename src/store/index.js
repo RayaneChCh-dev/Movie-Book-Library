@@ -17,6 +17,7 @@ export default createStore({
     },
     REMOVE_ITEM(state, id) {
       state.items = state.items.filter(item => item.id !== id)
+      // Si l'élément est dans les favoris, le retirer également
       if (state.favorites.includes(id)) {
         state.favorites = state.favorites.filter(favId => favId !== id)
         localStorage.setItem('favoriteItems', JSON.stringify(state.favorites))
@@ -41,10 +42,12 @@ export default createStore({
   },
   actions: {
     addItem({ commit }, item) {
+      // Génère un ID unique basé sur le timestamp
       const newItem = {
         ...item,
         id: Date.now().toString(),
-        consumed: item.consumed || false
+        consumed: item.consumed || false,
+        imageUrl: item.imageUrl || null
       }
       commit('ADD_ITEM', newItem)
     },
